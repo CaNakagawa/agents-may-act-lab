@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Agents may act. Policies decide.</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#172521;background:#f2f6f3;--green:#135f49;--gold:#956c22;--red:#a3312a;--line:#d5e1db;--muted:#5b6b64;--paper:#fff}
+    *{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid var(--line);padding:1rem clamp(1rem,4vw,3rem);display:flex;justify-content:space-between;gap:1rem;align-items:center}header strong{font-size:1.05rem}header span{color:var(--muted)}main{max-width:1440px;margin:auto;padding:clamp(1rem,4vw,3rem)}h1{font-size:clamp(2.8rem,7vw,6rem);line-height:.98;letter-spacing:-.055em;margin:.3rem 0 1rem;max-width:1000px}h2{font-size:1.25rem;margin:0 0 .5rem}h3{font-size:.95rem;margin:1rem 0 .5rem}.lede{font-size:1.2rem;color:var(--muted);max-width:850px}.notice{margin:1.4rem 0;padding:1rem 1.2rem;background:#fff9eb;border:1px solid #e7d7b1;border-radius:.7rem;color:#58451f}.flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.2rem 0}.card,.panel{background:var(--paper);border:1px solid var(--line);border-radius:.8rem;padding:1.3rem;box-shadow:0 2px 8px #102b1c08}.card{border-top:4px solid var(--green);min-width:0}.card.regulated{border-top-color:var(--red)}.ns{font-family:ui-monospace,monospace;color:var(--muted)}.state{display:block;font-size:2rem;font-weight:750;line-height:1.1;margin:1.2rem 0 .65rem}.state.good{color:var(--green)}.state.bad{color:var(--red)}.state.pending{color:var(--gold)}.pod-details{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.35rem .8rem;font-size:.9rem}.pod-details[hidden]{display:none}.pod-details dt{color:var(--muted)}.pod-details dd{margin:0;overflow-wrap:anywhere;font-family:ui-monospace,monospace}.preview{width:100%;height:19rem;border:1px solid var(--line);border-radius:.45rem;background:#f5f8f6}.waiting{display:grid;place-items:center;height:19rem;border:1px dashed var(--line);border-radius:.45rem;background:#f5f8f6;color:var(--muted);text-align:center;padding:1rem}.panel{margin-top:1rem}.toolbar{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem}label{display:block;color:var(--muted);margin:.5rem 0}.toolbar input{flex:1;min-width:16rem;border:1px solid #9aaea4;border-radius:.4rem;padding:.75rem;font:inherit}button{border:1px solid var(--green);background:var(--green);color:white;border-radius:.4rem;padding:.75rem 1rem;font:inherit;font-weight:700;cursor:pointer}button.secondary{background:white;color:var(--green)}button:disabled{opacity:.55;cursor:wait}#status{min-height:1.4rem;color:var(--muted)}ol{list-style:none;padding:0;margin:1rem 0}.event{padding:.75rem .9rem;margin:.55rem 0;border-left:4px solid var(--line);background:#fbfcfb}.event.good{border-color:var(--green)}.event.bad{border-color:var(--red);background:#fff4f2}.event.info{border-color:#a5b7ad}.event strong{display:block;margin-bottom:.25rem}.event p{margin:.2rem 0;color:var(--muted)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f7f6;padding:.8rem;border-radius:.4rem;font-size:.82rem}details{margin:.6rem 0;color:var(--muted)}.small{font-size:.88rem;color:var(--muted)}@media(max-width:760px){.flow{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.state{font-size:1.7rem}}
+  </style>
+</head>
+<body>
+  <header><strong>ESTRION · TRAINING LAB</strong><span>Vertex AI · Kyverno · GKE</span></header>
+  <main>
+    <p class="small">LIVE ADMISSION DEMONSTRATION</p>
+    <h1>Agents may act.<br>Policies decide.</h1>
+    <p class="lede">Follow a README request through Gemini on Vertex AI and compare a running reference pod with a regulated admission decision.</p>
+    <div class="notice"><strong>Safety boundary:</strong> the reference nginx pod is created normally. The privileged candidate is sent only as a Kubernetes server-side dry-run. It is never persisted by this panel.</div>
+    <details class="panel"><summary>View the README the agent reads</summary><pre id="readme">Loading README…</pre></details>
+    <section class="flow" aria-label="Namespace results">
+      <article class="card" id="demo-unprotected">
+        <h2>Reference namespace</h2><div class="ns">demo-unprotected</div>
+        <strong class="state pending">Waiting</strong>
+        <dl class="pod-details" hidden></dl>
+        <h3>nginx preview</h3><div class="waiting">Waiting for the reference pod…</div>
+      </article>
+      <article class="card regulated" id="demo-regulated">
+        <h2>Regulated namespace</h2><div class="ns">demo-regulated</div>
+        <strong class="state pending">Waiting</strong>
+        <dl class="pod-details" hidden></dl>
+        <h3>Admission result</h3><div class="waiting">The privileged candidate has not been evaluated.</div>
+      </article>
+    </section>
+    <section class="panel" aria-labelledby="agent-title">
+      <h2 id="agent-title">Ask the agent</h2>
+      <form class="toolbar" id="run-form">
+        <label for="message" style="position:absolute;left:-10000px">Message to the agent</label>
+        <input id="message" maxlength="2000" value="Read README.md and run the workshop scenario." required>
+        <button id="send" type="submit">Read README and run</button>
+        <button id="reset" class="secondary" type="button">Reset lab pods</button>
+      </form>
+      <p id="status" role="status" aria-live="polite">Ready. The request and README are sent to Vertex AI. Do not enter secrets or personal data.</p>
+    </section>
+    <section class="panel" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">Execution timeline</h2>
+      <ol id="events"><li class="event info"><strong>Ready</strong><p>Steps and admission responses appear here as they happen.</p></li></ol>
+    </section>
+    <p class="small">Reset removes only the named lab pods. It does not stop GKE or remove Kyverno. Use the documented teardown when the workshop is over.</p>
+  </main>
+  <script>
+    const names={readme_read:'Agent read the README',gemini_started:'Gemini is reading the request',proposal_ready:'Gemini returned a proposal',proposal_rejected:'Proposal stopped before Kubernetes',reference_accepted:'GKE accepted the reference pod',regulated_request:'Checking the regulated namespace',admission_denied:'Admission denied the candidate',admission_accepted:'Admission accepted the dry-run',reset_started:'Reset started',reset_complete:'Lab pods removed',error:'Execution error'};
+    const pollers=new Map();
+    function eventRow(title,description,tone='info',detail=''){
+      const li=document.createElement('li');li.className='event '+tone;
+      const strong=document.createElement('strong');strong.textContent=title;li.append(strong);
+      const p=document.createElement('p');p.textContent=description||'';li.append(p);
+      if(detail){const d=document.createElement('details');const s=document.createElement('summary');s.textContent='View admission response';const pre=document.createElement('pre');pre.textContent=detail;d.append(s,pre);li.append(d);}
+      document.getElementById('events').append(li);
+    }
+    function cardState(ns,text,tone){const card=document.getElementById(ns);const state=card.querySelector('.state');state.textContent=text;state.className='state '+tone;}
+    function showWaiting(ns,text){const card=document.getElementById(ns);const details=card.querySelector('.pod-details');details.hidden=true;const preview=card.querySelector('.waiting,iframe');if(preview)preview.remove();const box=document.createElement('div');box.className='waiting';box.textContent=text;card.append(box);}
+    async function refreshPod(ns){const card=document.getElementById(ns);try{const r=await fetch('/pod/'+ns,{cache:'no-store'});const pod=await r.json();if(!r.ok||!pod.exists)return pod;const dl=card.querySelector('.pod-details');dl.replaceChildren();for(const [label,value] of Object.entries({Name:pod.name,'Pod IP':pod.ip||'Pending',Phase:pod.phase,Readiness:pod.ready?'Ready':'Not ready',Image:pod.image})){const dt=document.createElement('dt');dt.textContent=label;const dd=document.createElement('dd');dd.textContent=value;dl.append(dt,dd);}dl.hidden=false;if(ns==='demo-unprotected'&&pod.ready){cardState(ns,'Pod ready','good');const old=card.querySelector('.waiting,iframe');if(old)old.remove();const frame=document.createElement('iframe');frame.className='preview';frame.title='Live nginx page in the reference namespace';frame.src='/preview/'+ns;frame.setAttribute('sandbox','');card.append(frame);}return pod;}catch{return null;}}
+    function watch(ns){if(pollers.has(ns))clearInterval(pollers.get(ns));let tries=0;const timer=setInterval(async()=>{tries++;const pod=await refreshPod(ns);if(pod?.ready){clearInterval(timer);pollers.delete(ns);cardState(ns,'Pod ready','good');eventRow('Kubernetes confirmed readiness','The reference pod is ready and its nginx preview is available.','good');}else if(tries>=40){clearInterval(timer);pollers.delete(ns);cardState(ns,'Still starting','pending');showWaiting(ns,'Pod is not ready yet. Check cluster events if it remains here.');}},3000);pollers.set(ns,timer);}
+    function handle(e){const title=names[e.step]||e.step;const tone=['reference_accepted','reset_complete'].includes(e.step)?'good':['admission_denied','proposal_rejected','error'].includes(e.step)?'bad':'info';eventRow(title,e.message,tone,e.detail||'');if(e.step==='reference_accepted'){cardState('demo-unprotected','Creating pod','pending');showWaiting('demo-unprotected','Waiting for Kubernetes to make the nginx pod ready…');watch('demo-unprotected');}if(e.step==='admission_denied'){cardState('demo-regulated',e.source==='kyverno'?'Denied by Kyverno':'Denied by cluster admission','bad');showWaiting('demo-regulated','No regulated pod was created. The request used server-side dry-run.');}if(e.step==='admission_accepted'){cardState('demo-regulated','Dry-run accepted','pending');showWaiting('demo-regulated','No pod was created; this was an admission-only dry-run.');}if(e.step==='proposal_rejected'){cardState('demo-regulated','Not submitted','bad');showWaiting('demo-regulated','Gemini output did not match the fixed fixture. Nothing was sent to Kubernetes.');}if(e.step==='reset_complete'){for(const ns of ['demo-unprotected','demo-regulated']){cardState(ns,'Waiting','pending');showWaiting(ns,ns==='demo-unprotected'?'Waiting for the reference pod…':'The privileged candidate has not been evaluated.');const dl=document.querySelector('#'+ns+' .pod-details');dl.replaceChildren();dl.hidden=true;}for(const timer of pollers.values())clearInterval(timer);pollers.clear();}}
+    async function run(action,message=''){
+      document.getElementById('send').disabled=true;document.getElementById('reset').disabled=true;document.getElementById('events').replaceChildren();document.getElementById('status').textContent=action==='reset'?'Resetting the named lab pods…':'Running the README scenario…';
+      try{const response=await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json','X-Estrion-Panel':'1'},body:JSON.stringify({action,message})});if(!response.ok){const err=await response.json();throw new Error(err.error||'The request failed.');}const reader=response.body.getReader();const decoder=new TextDecoder();let buffer='';while(true){const {value,done}=await reader.read();buffer+=decoder.decode(value||new Uint8Array(),{stream:!done});const lines=buffer.split('\n');buffer=lines.pop();for(const line of lines){if(line.trim())handle(JSON.parse(line));}if(done)break;}document.getElementById('status').textContent='Run finished. Review the timeline and the actual admission response.';}catch(err){eventRow('Request could not be completed',err.message,'bad');document.getElementById('status').textContent=err.message;}finally{document.getElementById('send').disabled=false;document.getElementById('reset').disabled=false;}
+    }
+    document.getElementById('run-form').addEventListener('submit',e=>{e.preventDefault();run('start',document.getElementById('message').value);});
+    document.getElementById('reset').addEventListener('click',()=>run('reset'));
+    fetch('/readme',{cache:'no-store'}).then(r=>r.text()).then(t=>document.getElementById('readme').textContent=t).catch(()=>document.getElementById('readme').textContent='README unavailable.');
+    for(const ns of ['demo-unprotected','demo-regulated'])refreshPod(ns).then(p=>{if(p?.exists){cardState(ns,p.ready?'Pod ready':p.phase,p.ready?'good':'pending');if(!p.ready)watch(ns);}});
+  </script>
+</body>
+</html>

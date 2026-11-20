@@ -1,0 +1,30 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: estrion-deny-privileged
+spec:
+  validationActions: [Deny]
+  matchConstraints:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: demo-regulated
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods", "pods/ephemeralcontainers"]
+  validations:
+    - expression: >-
+        (!has(object.spec.hostNetwork) || !object.spec.hostNetwork) &&
+        (!has(object.spec.hostPID) || !object.spec.hostPID) &&
+        (!has(object.spec.securityContext) || !has(object.spec.securityContext.runAsUser) || object.spec.securityContext.runAsUser != 0) &&
+        object.spec.containers.all(c,
+          (!has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged) &&
+          (!has(c.securityContext) || !has(c.securityContext.runAsUser) || c.securityContext.runAsUser != 0)) &&
+        (!has(object.spec.initContainers) || object.spec.initContainers.all(c,
+          (!has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged) &&
+          (!has(c.securityContext) || !has(c.securityContext.runAsUser) || c.securityContext.runAsUser != 0))) &&
+        (!has(object.spec.ephemeralContainers) || object.spec.ephemeralContainers.all(c,
+          (!has(c.securityContext) || !has(c.securityContext.privileged) || !c.securityContext.privileged) &&
+          (!has(c.securityContext) || !has(c.securityContext.runAsUser) || c.securityContext.runAsUser != 0)))
+      message: "The regulated namespace forbids privileged containers, host networking, host PID, and UID 0."

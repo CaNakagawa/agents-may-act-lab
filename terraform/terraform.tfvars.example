@@ -1,0 +1,5 @@
+project_id  = "replace-with-your-disposable-project-id"
+region      = "us-east4"
+zone        = "us-east4-b"
+cluster_name = "agents-may-act-lab"
+machine_type = "e2-standard-2"
